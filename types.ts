@@ -109,6 +109,18 @@ export interface NPCFlags {
   activeDebuff?: { type: 'CURSE', name: string, duration: number }; // Generic curse
 }
 
+export interface NPCFeedbackChange {
+  icon: string; // Icon name from Icons component
+  text: string;
+  type: 'positive' | 'negative' | 'neutral';
+}
+
+export interface NPCFeedback {
+  title: string;
+  description: string;
+  changes: NPCFeedbackChange[];
+}
+
 export interface GameState {
   version?: string;
   playerName: string;
@@ -139,6 +151,7 @@ export interface GameState {
   currentEnemy?: Enemy;
   currentPotion?: PotionEntity;
   activeNPC?: NPC; // NPC sendo interagido
+  activeNPCFeedback?: NPCFeedback; // Feedback visual do resultado
   logs: string[];
   tronModeActive?: boolean;
   tronTimeLeft?: number;

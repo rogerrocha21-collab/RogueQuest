@@ -1,6 +1,6 @@
 
 import React, { useEffect, useState, useRef } from 'react';
-import { Enemy, EntityStats, StatChoice, PotionEntity, ItemEntity, Pet, Language, Relic, AltarEffect, NPC } from '../types';
+import { Enemy, EntityStats, StatChoice, PotionEntity, ItemEntity, Pet, Language, Relic, AltarEffect, NPC, NPCFeedback } from '../types';
 import { Icon } from './Icons';
 import { ITEM_POOL, TRANSLATIONS, RELICS_POOL, POISONOUS_ENEMIES, NPC_COLORS } from '../constants';
 
@@ -348,10 +348,6 @@ export const CombatModal: React.FC<CombatModalProps> = ({
   );
 };
 
-// ... (Rest of Modal Components)
-// Retaining original implementation for other modals to save space in output, ensuring they are not lost.
-// Explicitly providing them below to match file replacement rules.
-
 export const NPCInteractionModal: React.FC<{ npc: NPC, language: Language, gold: number, inventory: PotionEntity[], onChoice: (choice: 1|2|3|4) => void }> = ({ npc, language, gold, inventory, onChoice }) => {
     const t = TRANSLATIONS[language];
     const npcKey = `npc_${npc.type.toLowerCase()}`;
@@ -403,6 +399,33 @@ export const NPCInteractionModal: React.FC<{ npc: NPC, language: Language, gold:
                        </button>
                    )}
                 </div>
+            </div>
+        </div>
+    );
+};
+
+export const NPCFeedbackModal: React.FC<{ feedback: NPCFeedback, language: Language, onClose: () => void }> = ({ feedback, language, onClose }) => {
+    const t = TRANSLATIONS[language];
+    return (
+        <div className="fixed inset-0 bg-black/95 flex items-center justify-center z-[80] p-6 backdrop-blur-md" onClick={onClose}>
+            <div className="bg-[#0f0f0f] border-2 border-zinc-800 p-8 rounded-[2.5rem] max-w-sm w-full text-center space-y-6 animate-in zoom-in-95 shadow-2xl relative" onClick={e => e.stopPropagation()}>
+                <h2 className="text-xl font-black text-white uppercase tracking-tighter border-b border-zinc-800 pb-4">{feedback.title}</h2>
+                <p className="text-zinc-400 font-mono text-sm leading-relaxed px-2">
+                    {feedback.description}
+                </p>
+                
+                <div className="space-y-2 bg-zinc-900/50 p-4 rounded-xl border border-zinc-800/50">
+                    {feedback.changes.map((change, i) => (
+                        <div key={i} className={`flex items-center gap-3 text-xs font-bold uppercase ${change.type === 'positive' ? 'text-green-400' : change.type === 'negative' ? 'text-red-400' : 'text-zinc-300'}`}>
+                            {React.createElement((Icon as any)[change.icon] || Icon.Activity, { width: 16, height: 16 })}
+                            <span>{change.text}</span>
+                        </div>
+                    ))}
+                </div>
+
+                <button onClick={onClose} className="w-full py-4 bg-zinc-800 hover:bg-zinc-700 text-white font-black rounded-2xl uppercase tracking-widest text-xs shadow-lg transition-all transform active:scale-95">
+                    {t.close}
+                </button>
             </div>
         </div>
     );

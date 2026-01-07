@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { GameState, Position, EntityStats, StatChoice, PotionEntity, Pet, Language, Relic, AltarEffect, PoisonStatus, Trap, NPC, NPCFlags } from './types';
+import { GameState, Position, EntityStats, StatChoice, PotionEntity, Pet, Language, Relic, AltarEffect, PoisonStatus, Trap, NPC, NPCFlags, NPCFeedback } from './types';
 import { INITIAL_PLAYER_STATS, MAP_WIDTH, MAP_HEIGHT, TRANSLATIONS, RELICS_POOL, THEME_CONFIG, MAX_LEVELS, BLESSINGS_POOL, CURSES_POOL, BIOME_MUSIC_URLS, SAVE_VERSION } from './constants';
 import { generateDungeon, findDungeonPath } from './utils/dungeon';
 import GameMap from './components/GameMap';
 import HUD from './components/HUD';
-import { CombatModal, ChestModal, MerchantShopModal, TutorialModal, PotionPickupModal, RelicSelectionModal, AltarInteractionModal, AltarResultModal, EggStoryModal, RewardSuccessModal, NPCInteractionModal, LevelCompleteModal, InventoryFullModal } from './components/Modals';
+import { CombatModal, ChestModal, MerchantShopModal, TutorialModal, PotionPickupModal, RelicSelectionModal, AltarInteractionModal, AltarResultModal, EggStoryModal, RewardSuccessModal, NPCInteractionModal, LevelCompleteModal, InventoryFullModal, NPCFeedbackModal } from './components/Modals';
 import { Icon } from './components/Icons';
 import { AdSense } from './components/AdSense';
 
@@ -719,7 +719,6 @@ const App: React.FC = () => {
     setMoveQueue([]);
   }, [saveGame]);
 
-  // ... (handleNPCInteraction remains mostly same, can be condensed in output if needed, but keeping logic consistent)
   const handleNPCInteraction = (choice: 1|2|3|4) => {
       setGameState(prev => {
           if (!prev || !prev.activeNPC) return prev;
@@ -731,7 +730,7 @@ const App: React.FC = () => {
           let npcs = prev.npcs.filter(n => n.id !== prev.activeNPC?.id);
           let activeFollower = prev.activeFollower;
           let gameStatus: GameState['gameStatus'] = 'PLAYING';
-          let logs = [...prev.logs];
+          let feedback: NPCFeedback = { title: '', description: '', changes: [] };
           let currentEnemy: any = undefined;
 
           const removePotion = () => {
@@ -743,12 +742,24 @@ const App: React.FC = () => {
               if (idx > -1) inventory.splice(idx, 1);
           };
 
-          // ... (NPC Logic switch - assuming same as before) ...
           switch (prev.activeNPC.type) {
               case 'MERCHANT_WOUNDED':
-                  if (choice === 1) { removePotion(); if(Math.random()>0.5) inventory.push({id:`gift-${Date.now()}`, percent:50, x:0,y:0}); flags.merchantDiscount = true; }
-                  else if (choice === 2) { gold -= 50; inventory.push({id:`anti-${Date.now()}`, percent:0, type:'ANTIDOTE', x:0,y:0}); inventory.push({id:`anti2-${Date.now()}`, percent:0, type:'ANTIDOTE', x:0,y:0}); }
-                  else if (choice === 4) { gold += 50; flags.merchantTax = true; }
+                  if (choice === 1) { 
+                      removePotion(); 
+                      flags.merchantDiscount = true;
+                      feedback = { title: t.fb_charity, description: t.fb_desc_merchant_help, changes: [{icon: 'Potion', text: '-1', type: 'negative'}, {icon: 'Coins', text: t.eff_merchant_discount, type: 'positive'}] };
+                  } else if (choice === 2) { 
+                      gold -= 50; 
+                      inventory.push({id:`anti-${Date.now()}`, percent:0, type:'ANTIDOTE', x:0,y:0}); 
+                      inventory.push({id:`anti2-${Date.now()}`, percent:0, type:'ANTIDOTE', x:0,y:0}); 
+                      feedback = { title: t.fb_charity, description: t.fb_desc_merchant_help, changes: [{icon: 'Coins', text: '-50', type: 'negative'}, {icon: 'Antidote', text: '+2', type: 'positive'}] };
+                  } else if (choice === 4) { 
+                      gold += 50; 
+                      flags.merchantTax = true; 
+                      feedback = { title: t.fb_theft, description: t.fb_desc_merchant_theft, changes: [{icon: 'Coins', text: '+50', type: 'positive'}, {icon: 'Coins', text: t.eff_merchant_tax, type: 'negative'}] };
+                  } else {
+                      feedback = { title: t.fb_ignorance, description: "...", changes: [] };
+                  }
                   break;
               
               case 'PRISONER':
@@ -756,38 +767,72 @@ const App: React.FC = () => {
                       stats.maxArmor += 2; stats.armor += 2; 
                       flags.activeBuff = { type: 'SHIELD', value: 10, duration: 3, name: 'Bênção da Prisioneira' };
                       activeFollower = { id: `fol-${Date.now()}`, type: 'PRISONER', name: 'Prisioneira', pos: prev.playerPos, levelsRemaining: 10 };
+                      feedback = { title: t.fb_charity, description: t.fb_desc_prisoner_free, changes: [{icon: 'Shield', text: '+2 Armor', type: 'positive'}, {icon: 'Player', text: t.eff_prisoner_join, type: 'positive'}] };
+                  } else if (choice === 2) { 
+                      gold += 30; 
+                      flags.moreEnemies = true; 
+                      feedback = { title: t.fb_cruelty, description: "...", changes: [{icon: 'Coins', text: '+30', type: 'positive'}, {icon: 'Enemy', text: t.eff_more_enemies, type: 'negative'}] };
+                  } else {
+                      feedback = { title: t.fb_ignorance, description: "...", changes: [] };
                   }
-                  else if (choice === 2) { gold += 30; flags.moreEnemies = true; }
                   break;
 
               case 'ALCHEMIST':
-                  if (choice === 1) { removeAntidote(); stats.hp = stats.maxHp; gold += 100; }
-                  else if (choice === 3) { gold += 50; flags.merchantTax = true; }
+                  if (choice === 1) { 
+                      removeAntidote(); 
+                      stats.hp = stats.maxHp; 
+                      gold += 100; 
+                      feedback = { title: t.fb_deal, description: t.fb_desc_alchemist_help, changes: [{icon: 'Antidote', text: '-1', type: 'negative'}, {icon: 'Heart', text: 'HP MAX', type: 'positive'}, {icon: 'Coins', text: '+100', type: 'positive'}] };
+                  } else if (choice === 3) { 
+                      gold += 50; 
+                      flags.merchantTax = true; 
+                      feedback = { title: t.fb_greed, description: "...", changes: [{icon: 'Coins', text: '+50', type: 'positive'}, {icon: 'Coins', text: t.eff_merchant_tax, type: 'negative'}] };
+                  } else {
+                      feedback = { title: t.fb_ignorance, description: "...", changes: [] };
+                  }
                   break;
 
               case 'IDOL':
-                  if (choice === 1) { gold -= 100; stats.attack += 5; }
-                  else if (choice === 2) { stats.hp = Math.floor(stats.hp * 0.9); stats.attack = Math.floor(stats.attack * 1.25); }
-                  else if (choice === 3) { 
+                  if (choice === 1) { 
+                      gold -= 100; 
+                      stats.attack += 5; 
+                      feedback = { title: t.fb_deal, description: t.fb_desc_idol_gold, changes: [{icon: 'Coins', text: '-100', type: 'negative'}, {icon: 'Sword', text: '+5 ATK', type: 'positive'}] };
+                  } else if (choice === 2) { 
+                      stats.hp = Math.floor(stats.hp * 0.9); 
+                      stats.attack = Math.floor(stats.attack * 1.25); 
+                      feedback = { title: t.fb_deal, description: t.fb_desc_idol_blood, changes: [{icon: 'Heart', text: '-10% HP', type: 'negative'}, {icon: 'Sword', text: '+25% ATK', type: 'positive'}] };
+                  } else if (choice === 3) { 
                       gameStatus = 'COMBAT';
                       currentEnemy = { id: 'idol-boss', type: 'Colosso Ósseo', x:0, y:0, stats: { hp: 200, maxHp: 200, attack: 20, armor: 10, maxArmor: 10, speed: 8 }, isBoss: true };
                       npcs = prev.npcs;
+                      feedback = { title: t.fb_combat, description: "...", changes: [] };
                   }
                   break;
 
               case 'KNIGHT':
-                  if (choice === 1) { flags.knightQuestActive = true; flags.knightQuestKills = 0; }
-                  else if (choice === 3) {
+                  if (choice === 1) { 
+                      flags.knightQuestActive = true; 
+                      flags.knightQuestKills = 0; 
+                      feedback = { title: t.fb_quest, description: t.fb_desc_knight_quest, changes: [{icon: 'Enemy', text: t.eff_quest_start, type: 'neutral'}] };
+                  } else if (choice === 3) {
                       gameStatus = 'COMBAT';
                       currentEnemy = { id: 'knight-boss', type: 'Cavaleiro Infernal', x:0, y:0, stats: { hp: 150, maxHp: 150, attack: 18, armor: 15, maxArmor: 15, speed: 10 }, isBoss: true };
+                      feedback = { title: t.fb_combat, description: "...", changes: [] };
+                  } else {
+                      feedback = { title: t.fb_ignorance, description: "...", changes: [] };
                   }
                   break;
 
               case 'CHILD':
-                  if (choice === 1) { flags.activeBuff = { type: 'ATTACK', value: 10, duration: 5, name: 'Esperança Pura' }; }
-                  else if (choice === 3) {
+                  if (choice === 1) { 
+                      flags.activeBuff = { type: 'ATTACK', value: 10, duration: 5, name: 'Esperança Pura' }; 
+                      feedback = { title: t.fb_charity, description: t.fb_desc_child_help, changes: [{icon: 'Sword', text: '+10 ATK (5)', type: 'positive'}] };
+                  } else if (choice === 3) {
                       gameStatus = 'COMBAT';
                       currentEnemy = { id: 'mimic-child', type: 'Aberração sem Forma', x:0, y:0, stats: { hp: 180, maxHp: 180, attack: 25, armor: 5, maxArmor: 5, speed: 12 }, isBoss: true };
+                      feedback = { title: t.fb_combat, description: "IT WAS A TRAP!", changes: [] };
+                  } else {
+                      feedback = { title: t.fb_ignorance, description: "...", changes: [] };
                   }
                   break;
 
@@ -795,18 +840,38 @@ const App: React.FC = () => {
                   if (choice === 1) { 
                       gold -= 80; 
                       prev.traps.forEach(t => t.revealed = true);
+                      feedback = { title: t.fb_deal, description: t.fb_desc_cartographer, changes: [{icon: 'Coins', text: '-80', type: 'negative'}, {icon: 'Trap', text: t.eff_traps_reveal, type: 'positive'}] };
+                  } else if (choice === 2) { 
+                      flags.activeDebuff = { type: 'CURSE', name: 'Maldição do Mapa', duration: 5 }; 
+                      feedback = { title: t.fb_curse, description: "...", changes: [{icon: 'Skull', text: 'Curse (5)', type: 'negative'}] };
+                  } else {
+                      feedback = { title: t.fb_ignorance, description: "...", changes: [] };
                   }
-                  else if (choice === 2) { flags.activeDebuff = { type: 'CURSE', name: 'Maldição do Mapa', duration: 5 }; }
                   break;
 
               case 'VOICE':
-                  if (choice === 1) { stats.maxHp += 10; stats.hp += 10; }
-                  else if (choice === 2) { gold += 50; }
+                  if (choice === 1) { 
+                      stats.maxHp += 10; stats.hp += 10; 
+                      feedback = { title: t.fb_blessing, description: t.fb_desc_voice_response, changes: [{icon: 'Heart', text: '+10 Max HP', type: 'positive'}] };
+                  } else if (choice === 2) { 
+                      gold += 50; 
+                      feedback = { title: t.fb_deal, description: "...", changes: [{icon: 'Coins', text: '+50', type: 'positive'}] };
+                  } else {
+                      feedback = { title: t.fb_ignorance, description: "...", changes: [] };
+                  }
                   break;
 
               case 'GUARD':
-                  if (choice === 1) { removeAntidote(); stats.maxArmor += 12; stats.armor += 12; }
-                  else if (choice === 2) { gold += 10; }
+                  if (choice === 1) { 
+                      removeAntidote(); 
+                      stats.maxArmor += 12; stats.armor += 12; 
+                      feedback = { title: t.fb_charity, description: t.fb_desc_guard_help, changes: [{icon: 'Antidote', text: '-1', type: 'negative'}, {icon: 'Shield', text: '+12 Armor', type: 'positive'}] };
+                  } else if (choice === 2) { 
+                      gold += 10; 
+                      feedback = { title: t.fb_cruelty, description: "...", changes: [{icon: 'Coins', text: '+10', type: 'positive'}] };
+                  } else {
+                      feedback = { title: t.fb_ignorance, description: "...", changes: [] };
+                  }
                   break;
           }
 
@@ -820,7 +885,8 @@ const App: React.FC = () => {
               activeFollower,
               gameStatus,
               currentEnemy,
-              activeNPC: undefined
+              activeNPC: undefined,
+              activeNPCFeedback: (feedback.changes.length > 0 || feedback.description) ? feedback : undefined
           };
       });
   };
@@ -1006,6 +1072,14 @@ const App: React.FC = () => {
           <InventoryFullModal language={currentLang} onClose={() => setInventoryFullAlert(false)} />
       )}
 
+      {gameState.gameStatus === 'NPC_INTERACTION' && gameState.activeNPCFeedback && (
+          <NPCFeedbackModal 
+             feedback={gameState.activeNPCFeedback}
+             language={currentLang}
+             onClose={() => setGameState(prev => prev ? { ...prev, activeNPCFeedback: undefined, gameStatus: 'PLAYING' } : null)}
+          />
+      )}
+
       {gameState.gameStatus === 'LOST' && (
         <div className="fixed inset-0 z-[120] bg-black/95 overflow-y-auto backdrop-blur-xl">
           <div className="min-h-full flex flex-col items-center justify-center p-4 py-8 space-y-6">
@@ -1047,7 +1121,7 @@ const App: React.FC = () => {
         />
       )}
 
-      {gameState.gameStatus === 'NPC_INTERACTION' && gameState.activeNPC && (
+      {gameState.gameStatus === 'NPC_INTERACTION' && gameState.activeNPC && !gameState.activeNPCFeedback && (
           <NPCInteractionModal 
              npc={gameState.activeNPC}
              language={currentLang}

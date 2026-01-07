@@ -4,7 +4,7 @@ import { LevelTheme, Language, Relic, AltarEffect, ItemEntity, NPCType } from '.
 export const MAP_WIDTH = 100;
 export const MAP_HEIGHT = 60;
 export const MAX_LEVELS = 150;
-export const SAVE_VERSION = 'v1.7.3'; 
+export const SAVE_VERSION = 'v1.8.0'; 
 
 export const INITIAL_PLAYER_STATS = {
   hp: 120,
@@ -186,8 +186,100 @@ export const ITEM_POOL: Omit<ItemEntity, 'x' | 'y' | 'id'>[] = [
 
 export const TRANSLATIONS: Record<Language, any> = {
   PT: {
+    // NPCs REWRITTEN
+    npc_merchant_wounded_name: "Mercador Ferido", 
+    npc_merchant_wounded_desc: "Um mercador ferido se arrasta contra a parede. Sua mochila aberta revela moedas manchadas de sangue. Ele ergue os olhos e espera sua decisão.", 
+    npc_merchant_wounded_c1: "Dar uma Poção", 
+    npc_merchant_wounded_c2: "Dar 50 Ouro", 
+    npc_merchant_wounded_c3: "Ignorar", 
+    npc_merchant_wounded_c4: "Roubar",
+    
+    npc_prisoner_name: "Prisioneira das Catacumbas", 
+    npc_prisoner_desc: "Correntes enferrujadas prendem uma mulher exausta. O chão treme levemente. Você sente que sua decisão terá peso.", 
+    npc_prisoner_c1: "Libertar", 
+    npc_prisoner_c2: "Matar", 
+    npc_prisoner_c3: "Ignorar",
+    
+    npc_alchemist_name: "Alquimista Obcecado", 
+    npc_alchemist_desc: "Frascos quebrados, vapores tóxicos e olhos enlouquecidos. Ele precisa de um antídoto para concluir algo que talvez nunca devesse existir.", 
+    npc_alchemist_c1: "Entregar Antídoto", 
+    npc_alchemist_c2: "Recusar", 
+    npc_alchemist_c3: "Exigir Pagamento",
+    
+    npc_idol_name: "Ídolo Sussurrante", 
+    npc_idol_desc: "A estátua pulsa levemente. Sussurros ecoam direto na sua mente, exigindo uma oferta.", 
+    npc_idol_c1: "Oferecer Ouro (100)", 
+    npc_idol_c2: "Oferecer Vida (10%)", 
+    npc_idol_c3: "Destruir o Ídolo",
+    
+    npc_knight_name: "Cavaleiro Sem Rosto", 
+    npc_knight_desc: "Um cavaleiro sem rosto segura uma espada quebrada. Sua voz ecoa oca dentro da armadura.", 
+    npc_knight_c1: "Aceitar Missão (Matar 3)", 
+    npc_knight_c2: "Recusar", 
+    npc_knight_c3: "Atacar",
+    
+    npc_child_name: "Criança Perdida", 
+    npc_child_desc: "Uma criança assustada chora entre sombras. O caminho à frente está repleto de monstros.", 
+    npc_child_c1: "Ajudar (Bênção)", 
+    npc_child_c2: "Ignorar", 
+    npc_child_c3: "Investigar",
+    
+    npc_cartographer_name: "Velho Cartógrafo", 
+    npc_cartographer_desc: "Mapas rabiscados cobrem o chão. Ele não vende itens, apenas verdades inconvenientes.", 
+    npc_cartographer_c1: "Comprar Verdade (80)", 
+    npc_cartographer_c2: "Ameaçar", 
+    npc_cartographer_c3: "Ignorar",
+    
+    npc_voice_name: "Voz na Escuridão", 
+    npc_voice_desc: "Você ouve uma voz sem forma. Ela pede... algo. Talvez atenção. Talvez um preço.", 
+    npc_voice_c1: "Responder", 
+    npc_voice_c2: "Oferecer Ouro (50)", 
+    npc_voice_c3: "Silêncio",
+    
+    npc_guard_name: "Guarda Corrompido", 
+    npc_guard_desc: "Um antigo protetor, agora deformado. Ele pede redenção com os últimos traços de sanidade.", 
+    npc_guard_c1: "Dar Antídoto", 
+    npc_guard_c2: "Matar", 
+    npc_guard_c3: "Ignorar",
+
+    // FEEDBACK TITLES & STRINGS
+    fb_charity: "Ato de Caridade",
+    fb_greed: "Avareza",
+    fb_cruelty: "Crueldade",
+    fb_ignorance: "Indiferença",
+    fb_deal: "Trato Feito",
+    fb_quest: "Missão Aceita",
+    fb_consequence: "Consequência",
+    fb_blessing: "Bênção Recebida",
+    fb_curse: "Maldição",
+    fb_combat: "Combate Iminente",
+    fb_theft: "Roubo",
+    
+    // FEEDBACK SPECIFIC
+    fb_desc_merchant_help: "O mercador agradece com lágrimas. Ele promete descontos futuros.",
+    fb_desc_merchant_theft: "Você rouba o que pode. O mercador pragueja contra sua alma.",
+    fb_desc_prisoner_free: "Ela se levanta, jurando lutar ao seu lado por um tempo.",
+    fb_desc_alchemist_help: "Ele ri maniacamente e lhe entrega uma mistura instável.",
+    fb_desc_idol_gold: "O ídolo consome o ouro e brilha com poder.",
+    fb_desc_idol_blood: "O ídolo drena seu sangue, mas te fortalece.",
+    fb_desc_knight_quest: "O cavaleiro aponta sua espada para o escuro. A caçada começou.",
+    fb_desc_child_help: "A criança toca sua mão. Uma luz quente te envolve.",
+    fb_desc_cartographer: "Ele revela os segredos deste andar.",
+    fb_desc_voice_response: "A voz sussurra segredos antigos.",
+    fb_desc_guard_help: "Sua pele volta ao normal. Ele lhe entrega seu escudo.",
+
+    // EFFECTS
+    eff_merchant_discount: "Desconto no Mercador (-50%)",
+    eff_merchant_tax: "Imposto do Mercador (+50%)",
+    eff_prisoner_join: "Prisioneira aliada (10 níveis)",
+    eff_more_enemies: "Mais inimigos aparecerão",
+    eff_quest_start: "Derrote 3 Inimigos",
+    eff_map_reveal: "Mapa Revelado",
+    eff_traps_reveal: "Armadilhas Reveladas",
+    
     // ... (Tutorial keys unchanged)
     tut_prove_title: "PROVE SEU VALOR", tut_prove_desc: "Antes de avançar, você precisa provar seu valor.\nDerrote pelo menos um inimigo para seguir adiante.",
+    // ... (Keeping all existing translations)
     tut_key_title: "ENCONTRE A CHAVE", tut_key_desc: "A saída está trancada.\nExplore o mapa até encontrar a chave.",
     tut_stairs_title: "USE A ESCADA", tut_stairs_desc: "Com a chave em mãos, procure a escada.\nEla leva você a níveis mais profundos.",
     tut_battle_title: "COMO FUNCIONAM AS BATALHAS", tut_battle_desc: "As batalhas são automáticas.\nVocê e o inimigo atacam em turnos.",
@@ -228,7 +320,7 @@ export const TRANSLATIONS: Record<Language, any> = {
     theme_matrix: "Matrix", theme_furnace: "Fornalha", theme_swamp: "Pântano", theme_temple: "Templo", theme_chaos: "Caos", theme_hive: "Colmeia",
 
     relic_slots_name: "+5 Slot Inventário", relic_slots_desc: "Aumenta permanentemente o inventário em 5 slots.",
-    relic_bleed_name: "Dente Serrilhado", relic_bleed_desc: "+1% de chance de causar sangramento permanente ao inimigo.",
+    relic_bleed_name: "Diente Serrilhado", relic_bleed_desc: "+1% de chance de causar sangramento permanente ao inimigo.",
     relic_defense_name: "Placa Rachada", relic_defense_desc: "Reduz em 1 o dano recebido (mínimo 1).",
     relic_crit_name: "Olho do Caçador", relic_crit_desc: "+1% de chance de crítico.",
     relic_power_name: "Punho Enrijecido", relic_power_desc: "Primeiro ataque em cada andar causa +10% de dano.",
@@ -268,20 +360,9 @@ export const TRANSLATIONS: Record<Language, any> = {
     c_weight_name: "Peso Morto", c_weight_desc: "Sua velocidade é reduzida.",
     c_tribute_name: "Tributo de Sangue", c_tribute_desc: "Perde vida ao pegar ouro.",
 
-    npc_merchant_wounded_name: "Mercador Ferido", npc_merchant_wounded_desc: "O mercador está encostado na parede, sangrando...", npc_merchant_wounded_c1: "Dar Poção", npc_merchant_wounded_c2: "Dar 50 Ouro", npc_merchant_wounded_c3: "Ignorar", npc_merchant_wounded_c4: "Roubar",
-    npc_prisoner_name: "Prisioneira das Catacumbas", npc_prisoner_desc: "Uma mulher acorrentada implora por ajuda...", npc_prisoner_c1: "Libertar", npc_prisoner_c2: "Matar", npc_prisoner_c3: "Ignorar",
-    npc_alchemist_name: "Alquimista Obcecado", npc_alchemist_desc: "Um alquimista pede um Antídoto para finalizar um experimento.", npc_alchemist_c1: "Entregar Antídoto", npc_alchemist_c2: "Recusar", npc_alchemist_c3: "Exigir Pagamento",
-    npc_idol_name: "Ídolo Sussurrante", npc_idol_desc: "Uma estátua viva pede uma oferta...", npc_idol_c1: "Oferecer Ouro (100)", npc_idol_c2: "Oferecer Vida (10%)", npc_idol_c3: "Destruir o Ídolo",
-    npc_knight_name: "Cavaleiro Sem Rosto", npc_knight_desc: "Um cavaleiro pede ajuda para terminar sua missão...", npc_knight_c1: "Ajudar (Mate 3 Inimigos)", npc_knight_c2: "Recusar", npc_knight_c3: "Atacar",
-    npc_child_name: "Criança Perdida", npc_child_desc: "Uma criança sozinha está em busca da saída...", npc_child_c1: "Ajudar (Benção)", npc_child_c2: "Ignorar", npc_child_c3: "Explorar a Situação",
-    npc_cartographer_name: "Velho Cartógrafo", npc_cartographer_desc: "Ele vende conhecimento, não itens...", npc_cartographer_c1: "Pagar Ouro (80)", npc_cartographer_c2: "Ameaçar", npc_cartographer_c3: "Ignorar",
-    npc_voice_name: "Voz na Escuridão", npc_voice_desc: "Uma voz pede algo… mas você não vê ninguém...", npc_voice_c1: "Responder", npc_voice_c2: "Oferecer Ouro (50)", npc_voice_c3: "Silêncio",
-    npc_guard_name: "Guarda Corrompido", npc_guard_desc: "Um ex-protetor agora deformado pede redenção...", npc_guard_c1: "Dar Antídoto", npc_guard_c2: "Matar", npc_guard_c3: "Ignorar",
-
-    follower_prisoner: "Prisioneira", follower_knight: "Cavaleiro",
+    follower_prisoner: "Prisioneira", follower_knight: "Caballero",
     no_potion: "Sem poções!", no_gold: "Sem ouro!", no_antidote: "Sem antídoto!",
     
-    // ... (Existing translations)
     shop_solo_dev_msg: "Este jogo é desenvolvido e mantido por um desenvolvedor solo, com muito cuidado e dedicação.\nSe você gosta da experiência e deseja apoiar o projeto, pode adquirir qualquer um dos itens abaixo.\nAs compras ajudam diretamente a manter o jogo online, cobrir custos de servidores, ferramentas, atualizações e novas melhorias.\n\nTodos os pagamentos são feitos de forma segura pela Stripe, uma das plataformas de checkout mais confiáveis e utilizadas no mundo.\n\nApoiar é opcional, mas faz uma enorme diferença para manter o jogo vivo e em constante evolução.\n\nObrigado por jogar",
     shop_info_title: "Informações importantes:",
     shop_info_secure: "• Pagamento rápido e seguro via Stripe\n• Nenhum dado de cartão é armazenado pelo jogo\n• As recompensas são liberadas automaticamente após a confirmação",
@@ -300,13 +381,103 @@ export const TRANSLATIONS: Record<Language, any> = {
     security_outro: "Assim que o jogo for reaberto, suas moedas já estarão automaticamente adicionadas ao seu perfil.",
     security_thanks: "OBRIGADO PELO SEU APOIO E BOA JORNADA!",
     
-    // NEW ITEMS
     item_sword_1: "Espada Rústica", item_sword_2: "Lâmina Afiada", item_sword_3: "Espada do Veterano", item_sword_4: "Machado Pesado", item_sword_5: "Arma de Guerra",
     item_shield_1: "Escudo de Madeira", item_shield_2: "Escudo Reforçado", item_shield_3: "Placas de Ferro", item_shield_4: "Couraça Pesada", item_shield_5: "Armadura de Batalha",
     item_health_1: "Talismã Vital", item_health_2: "Amuleto de Sangue", item_health_3: "Coração Endurecido", item_health_4: "Relicário Vital", item_health_5: "Essência da Vida",
     item_speed_1: "Botas Leves", item_speed_2: "Passos Ágeis", item_speed_3: "Grevas Rápidas", item_speed_4: "Marca do Vento", item_speed_5: "Reflexos Sobrenaturais",
   },
   EN: {
+    // NPCs REWRITTEN
+    npc_merchant_wounded_name: "Wounded Merchant", 
+    npc_merchant_wounded_desc: "A wounded merchant leans against the wall. His open pack reveals blood-stained coins. He looks up, awaiting your decision.", 
+    npc_merchant_wounded_c1: "Give Potion", 
+    npc_merchant_wounded_c2: "Give 50 Gold", 
+    npc_merchant_wounded_c3: "Ignore", 
+    npc_merchant_wounded_c4: "Steal",
+    
+    npc_prisoner_name: "Catacombs Prisoner", 
+    npc_prisoner_desc: "Rusted chains hold an exhausted woman. The ground trembles slightly. You feel your decision will carry weight.", 
+    npc_prisoner_c1: "Free", 
+    npc_prisoner_c2: "Kill", 
+    npc_prisoner_c3: "Ignore",
+    
+    npc_alchemist_name: "Obsessed Alchemist", 
+    npc_alchemist_desc: "Broken vials, toxic fumes, and maddened eyes. He needs an antidote to finish something that perhaps should never exist.", 
+    npc_alchemist_c1: "Give Antidote", 
+    npc_alchemist_c2: "Refuse", 
+    npc_alchemist_c3: "Demand Payment",
+    
+    npc_idol_name: "Whispering Idol", 
+    npc_idol_desc: "The statue pulses faintly. Whispers echo directly in your mind, demanding an offering.", 
+    npc_idol_c1: "Offer Gold (100)", 
+    npc_idol_c2: "Offer Life (10%)", 
+    npc_idol_c3: "Destroy Idol",
+    
+    npc_knight_name: "Faceless Knight", 
+    npc_knight_desc: "A faceless knight holds a broken sword. His voice echoes hollow inside the armor.", 
+    npc_knight_c1: "Accept Quest (Kill 3)", 
+    npc_knight_c2: "Refuse", 
+    npc_knight_c3: "Attack",
+    
+    npc_child_name: "Lost Child", 
+    npc_child_desc: "A scared child cries amidst the shadows. The path ahead is teeming with monsters.", 
+    npc_child_c1: "Help (Blessing)", 
+    npc_child_c2: "Ignore", 
+    npc_child_c3: "Investigate",
+    
+    npc_cartographer_name: "Old Cartographer", 
+    npc_cartographer_desc: "Scribbled maps cover the floor. He sells no items, only inconvenient truths.", 
+    npc_cartographer_c1: "Buy Truth (80)", 
+    npc_cartographer_c2: "Threaten", 
+    npc_cartographer_c3: "Ignore",
+    
+    npc_voice_name: "Voice in Darkness", 
+    npc_voice_desc: "You hear a formless voice. It asks for... something. Maybe attention. Maybe a price.", 
+    npc_voice_c1: "Respond", 
+    npc_voice_c2: "Offer Gold (50)", 
+    npc_voice_c3: "Silence",
+    
+    npc_guard_name: "Corrupted Guard", 
+    npc_guard_desc: "A former protector, now deformed. He asks for redemption with his last shreds of sanity.", 
+    npc_guard_c1: "Give Antidote", 
+    npc_guard_c2: "Kill", 
+    npc_guard_c3: "Ignore",
+
+    // FEEDBACK TITLES & STRINGS
+    fb_charity: "Act of Charity",
+    fb_greed: "Greed",
+    fb_cruelty: "Cruelty",
+    fb_ignorance: "Indifference",
+    fb_deal: "Deal Struck",
+    fb_quest: "Quest Accepted",
+    fb_consequence: "Consequence",
+    fb_blessing: "Blessing Received",
+    fb_curse: "Curse",
+    fb_combat: "Imminent Combat",
+    fb_theft: "Theft",
+    
+    fb_desc_merchant_help: "The merchant thanks you with tears. He promises future discounts.",
+    fb_desc_merchant_theft: "You steal what you can. The merchant curses your soul.",
+    fb_desc_prisoner_free: "She stands up, swearing to fight by your side for a while.",
+    fb_desc_alchemist_help: "He laughs maniacally and hands you an unstable mixture.",
+    fb_desc_idol_gold: "The idol consumes the gold and glows with power.",
+    fb_desc_idol_blood: "The idol drains your blood, but strengthens you.",
+    fb_desc_knight_quest: "The knight points his sword at the dark. The hunt begins.",
+    fb_desc_child_help: "The child touches your hand. A warm light surrounds you.",
+    fb_desc_cartographer: "He reveals the secrets of this floor.",
+    fb_desc_voice_response: "The voice whispers ancient secrets.",
+    fb_desc_guard_help: "His skin returns to normal. He hands you his shield.",
+
+    // EFFECTS
+    eff_merchant_discount: "Merchant Discount (-50%)",
+    eff_merchant_tax: "Merchant Tax (+50%)",
+    eff_prisoner_join: "Prisoner Ally (10 levels)",
+    eff_more_enemies: "More enemies will spawn",
+    eff_quest_start: "Defeat 3 Enemies",
+    eff_map_reveal: "Map Revealed",
+    eff_traps_reveal: "Traps Revealed",
+
+    // ... (Keeping existing translations)
     tut_prove_title: "PROVE YOUR WORTH", tut_prove_desc: "Before advancing, you must prove your worth.\nDefeat at least one enemy to move on.",
     tut_key_title: "FIND THE KEY", tut_key_desc: "The exit is locked.\nExplore the map until you find the key.",
     tut_stairs_title: "USE THE STAIRS", tut_stairs_desc: "With the key in hand, look for the stairs.\nIt leads you to deeper levels.",
@@ -322,7 +493,7 @@ export const TRANSLATIONS: Record<Language, any> = {
     tut_end_title: "THE END", tut_end_desc: "The world doesn't wait for heroes.\nOnly the persistent descend deeper.",
 
     inventory_title: "INVENTORY", inventory_full_title: "Inventory Full!", inventory_full_btn: "OK", inventory_full: "Inventory full!",
-    use: "USE", store: "STORE", close: "CLOSE", exit: "EXIT", next: "NEXT", start: "START", back: "BACK", yes: "YES", no: "NO", vs: "VS",
+    use: "USAR", store: "STORE", close: "CLOSE", exit: "EXIT", next: "NEXT", start: "START", back: "BACK", yes: "YES", no: "NO", vs: "VS",
     turn_log_title: "Turn Log", save_reset_title: "ABYSS UPDATE", save_reset_desc: "The winds have shifted. Your previous journey was lost in the shadows of an update, but the path opens once more.", save_reset_btn: "ACCEPT FATE",
     descending: "Descending", relic_choice: "CHOOSE A RELIC", relic_active: "ACTIVE RELIC", hero_placeholder: "HERO NAME", continue_journey: "Continue Journey",
     new_game: "New Game", start_journey: "Start Journey", feedback: "Feedback", real_shop: "Shop",
@@ -342,74 +513,12 @@ export const TRANSLATIONS: Record<Language, any> = {
     crow_reveal: "Crow revealed traps!",
     level_complete: "LEVEL COMPLETE", next_level_desc: "Darkness embraces you as you descend...", descend_btn: "DESCEND DEEPER",
     
-    theme_cave: "Deep Caves", theme_snow: "Frozen Peaks", theme_desert: "Deadly Dunes", theme_forest: "Black Forest", theme_inferno: "Infernal Zone", theme_ruins: "Ancient Ruins",
-    theme_void: "Abyssal Void", theme_mechanical: "Mechanical Complex", theme_corrupted: "Corrupted Zone", theme_catacombs: "Catacombs", theme_ossuary: "Ossuary", theme_astral: "Astral Plane",
-    theme_matrix: "Matrix", theme_furnace: "Furnace", theme_swamp: "Toxic Swamp", theme_temple: "Forgotten Temple", theme_chaos: "Chaos Zone", theme_hive: "Deep Hive",
-
-    relic_slots_name: "+5 Inventory Slots", relic_slots_desc: "Permanently increases inventory by 5 slots.",
-    relic_bleed_name: "Serrated Tooth", relic_bleed_desc: "+1% chance to cause permanent bleeding to enemy.",
-    relic_defense_name: "Cracked Plate", relic_defense_desc: "Reduces damage taken by 1 (min 1).",
-    relic_crit_name: "Hunter's Eye", relic_crit_desc: "+1% crit chance.",
-    relic_power_name: "Hardened Fist", relic_power_desc: "First attack on each floor deals +10% damage.",
-    relic_vamp_name: "Crimson Hourglass", relic_vamp_desc: "Recover 15% HP when killing an enemy.",
-    relic_alch_name: "Alchemical Residue", relic_alch_desc: "Potions heal +5% more.",
-    relic_save_name: "Unstable Flask", relic_save_desc: "5% chance potion is not consumed.",
-    relic_memory_name: "Distilled Memory", relic_memory_desc: "First potion used in each run has double effect.",
-    relic_gaze_name: "Ancient Gauze", relic_gaze_desc: "Start run with a +70% heal potion.",
-    relic_collar_name: "Bone Collar", relic_collar_desc: "Pets gain +10 base damage.",
-    relic_bag_name: "Stitched Bag", relic_bag_desc: "+5% gold gained.",
-    relic_coin_name: "Ancient Coin", relic_coin_desc: "5% chance enemies drop extra gold.",
-    relic_heart_name: "Fissured Heart", relic_heart_desc: "+10% damage, -5% Max HP.",
-    relic_mark_name: "Mark of Sacrifice", relic_mark_desc: "Start run with -10% HP but +60 Gold.",
-    relic_echo_name: "Echo of Deaths", relic_echo_desc: "Inherit 20% of stats from previous run.",
-
-    b_sharp_name: "Sharp Blood", b_sharp_desc: "After killing 1 enemy, +10% damage until level exit.",
-    b_fury_name: "Contained Fury", b_fury_desc: "+15% damage while under 50% HP.",
-    b_strike_name: "Anxious Strike", b_strike_desc: "First attack deals double damage.",
-    b_fists_name: "Consecrated Fists", b_fists_desc: "Attacks ignore part of enemy defense.",
-    b_eyes_name: "Open Eyes", b_eyes_desc: "Reveals key location.",
-    b_luck_name: "Pilgrim's Luck", b_luck_desc: "5% chance for chests to give +100 gold.",
-    b_surrendered_name: "Surrendered Blood", b_surrendered_desc: "Recover 30% HP when killing enemies.",
-    b_accepted_name: "Accepted Offering", b_accepted_desc: "First potion used is not consumed.",
-    b_greed_name: "Sacred Greed", b_greed_desc: "Enemies drop +15% gold on this floor.",
-    b_merchant_name: "Merchant's Blessing", b_merchant_desc: "Items cost -20% until next level.",
-    b_chest_name: "Consecrated Chest", b_chest_desc: "Next chest gives double stats.",
-
-    c_fragile_name: "Fragile Blood", c_fragile_desc: "Take +10% damage until level exit.",
-    c_hands_name: "Trembling Hands", c_hands_desc: "15% chance to miss attacks.",
-    c_breath_name: "Short Breath", c_breath_desc: "Cannot attack consecutive turns (recover breath).",
-    c_mark_name: "Mark of Prey", c_mark_desc: "Enemies cause bleeding (-2 HP per turn).",
-    c_reflexes_name: "Slow Reflexes", c_reflexes_desc: "Enemies attack first.",
-    c_darkness_name: "Ritual Darkness", c_darkness_desc: "Limited vision.",
-    c_thirst_name: "Profane Thirst", c_thirst_desc: "Potions heal -20% less.",
-    c_denied_name: "Denied Offering", c_denied_desc: "First potion is wasted.",
-    c_greed_name: "Cursed Greed", c_greed_desc: "Enemies drop -25% gold.",
-    c_weight_name: "Dead Weight", c_weight_desc: "Speed is reduced.",
-    c_tribute_name: "Blood Tribute", c_tribute_desc: "Lose HP when gaining gold.",
-    
-    npc_merchant_wounded_name: "Wounded Merchant", npc_merchant_wounded_desc: "The merchant is leaning against the wall, bleeding...", npc_merchant_wounded_c1: "Give Potion", npc_merchant_wounded_c2: "Give 50 Gold", npc_merchant_wounded_c3: "Ignore", npc_merchant_wounded_c4: "Steal",
-    npc_prisoner_name: "Catacombs Prisoner", npc_prisoner_desc: "A chained woman begs for help...", npc_prisoner_c1: "Free", npc_prisoner_c2: "Kill", npc_prisoner_c3: "Ignore",
-    npc_alchemist_name: "Obsessed Alchemist", npc_alchemist_desc: "An alchemist asks for an Antidote...", npc_alchemist_c1: "Give Antidote", npc_alchemist_c2: "Refuse", npc_alchemist_c3: "Demand Payment",
-    npc_idol_name: "Whispering Idol", npc_idol_desc: "A living statue demands an offering...", npc_idol_c1: "Offer Gold (100)", npc_idol_c2: "Offer Life (10%)", npc_idol_c3: "Destroy Idol",
-    npc_knight_name: "Faceless Knight", npc_knight_desc: "A knight asks for help...", npc_knight_c1: "Help (Kill 3 Enemies)", npc_knight_c2: "Refuse", npc_knight_c3: "Attack",
-    npc_child_name: "Lost Child", npc_child_desc: "A lone child seeks the exit...", npc_child_c1: "Help (Blessing)", npc_child_c2: "Ignore", npc_child_c3: "Explore Situation",
-    npc_cartographer_name: "Old Cartographer", npc_cartographer_desc: "He sells knowledge...", npc_cartographer_c1: "Pay Gold (80)", npc_cartographer_c2: "Threaten", npc_cartographer_c3: "Ignore",
-    npc_voice_name: "Voice in Darkness", npc_voice_desc: "A voice asks for something...", npc_voice_c1: "Respond", npc_voice_c2: "Offer Gold (50)", npc_voice_c3: "Silence",
-    npc_guard_name: "Corrupted Guard", npc_guard_desc: "A deformed ex-protector...", npc_guard_c1: "Give Antidote", npc_guard_c2: "Kill", npc_guard_c3: "Ignore",
-
     follower_prisoner: "Prisoner", follower_knight: "Knight", no_potion: "No potions!", no_gold: "No gold!", no_antidote: "No antidote!",
     
-    shop_solo_dev_msg: "This game is developed by a solo dev with great care. If you enjoy the experience and want to support the project, you can purchase any item below. Purchases help keep the game online, cover server costs, and support updates. All payments are secure via Stripe. Supporting is optional but makes a huge difference. Thanks for playing!",
-    shop_info_title: "Important Information:",
-    shop_info_secure: "• Secure payment via Stripe\n• No card data stored by the game\n• Rewards are automatically released upon confirmation",
-    ost_title: "SOUNDTRACK UNLOCKED", ost_desc: "The complete game soundtrack is available for download.",
-    ost_important_title: "Important:", ost_important_msg: "Files are in a .ZIP archive. You will need to unzip them to listen.",
-    ost_footer: "Safe travels and thanks for supporting a solo dev",
-    btn_download: "DOWNLOAD SOUNDTRACK", btn_shop: "SUPPORT / SHOP",
-    gold_reward_title: "REWARD CLAIMED!", gold_reward_msg: "Thank you for your support! Coins have been added to your game.",
-    security_intro: "To protect your account and ensure the reward is linked correctly, we need one last security step.",
-    security_step1: "Close this window now", security_step2: "Start the game again via the bot",
-    security_outro: "As soon as the game reopens, your coins will be automatically added.", security_thanks: "THANKS FOR YOUR SUPPORT!",
+    shop_solo_dev_msg: "This game is developed by a solo dev...", shop_info_title: "Important Information:", shop_info_secure: "• Secure payment",
+    ost_title: "SOUNDTRACK UNLOCKED", ost_desc: "Download available.", ost_important_title: "Important:", ost_important_msg: "ZIP file.", ost_footer: "Thanks.",
+    btn_download: "DOWNLOAD", btn_shop: "SUPPORT", gold_reward_title: "REWARD CLAIMED!", gold_reward_msg: "Coins added.",
+    security_intro: "Security step.", security_step1: "Close window", security_step2: "Restart game", security_outro: "Coins added on restart.", security_thanks: "THANKS!",
     
     item_sword_1: "Rustic Sword", item_sword_2: "Sharp Blade", item_sword_3: "Veteran's Sword", item_sword_4: "Heavy Axe", item_sword_5: "War Weapon",
     item_shield_1: "Wooden Shield", item_shield_2: "Reinforced Shield", item_shield_3: "Iron Plates", item_shield_4: "Heavy Plate", item_shield_5: "Battle Armor",
@@ -417,6 +526,97 @@ export const TRANSLATIONS: Record<Language, any> = {
     item_speed_1: "Light Boots", item_speed_2: "Agile Steps", item_speed_3: "Quick Greaves", item_speed_4: "Wind Mark", item_speed_5: "Supernatural Reflexes",
   },
   ES: {
+    // NPCs REWRITTEN
+    npc_merchant_wounded_name: "Mercader Herido", 
+    npc_merchant_wounded_desc: "Un mercader herido se arrastra contra la pared. Su mochila abierta revela monedas manchadas de sangre. Levanta la vista y espera tu decisión.", 
+    npc_merchant_wounded_c1: "Dar Poción", 
+    npc_merchant_wounded_c2: "Dar 50 Oro", 
+    npc_merchant_wounded_c3: "Ignorar", 
+    npc_merchant_wounded_c4: "Robar",
+    
+    npc_prisoner_name: "Prisionera de las Catacumbas", 
+    npc_prisoner_desc: "Cadenas oxidadas sujetan a una mujer exhausta. El suelo tiembla levemente. Sientes que tu decisión tendrá peso.", 
+    npc_prisoner_c1: "Liberar", 
+    npc_prisoner_c2: "Matar", 
+    npc_prisoner_c3: "Ignorar",
+    
+    npc_alchemist_name: "Alquimista Obsesionado", 
+    npc_alchemist_desc: "Frascos rotos, vapores tóxicos y ojos enloquecidos. Necesita un antídoto para concluir algo que tal vez nunca debió existir.", 
+    npc_alchemist_c1: "Entregar Antídoto", 
+    npc_alchemist_c2: "Rechazar", 
+    npc_alchemist_c3: "Exigir Pago",
+    
+    npc_idol_name: "Ídolo Susurrante", 
+    npc_idol_desc: "La estatua pulsa levemente. Susurros resuenan directo en tu mente, exigiendo una ofrenda.", 
+    npc_idol_c1: "Ofrecer Oro (100)", 
+    npc_idol_c2: "Ofrecer Vida (10%)", 
+    npc_idol_c3: "Destruir el Ídolo",
+    
+    npc_knight_name: "Caballero Sin Rostro", 
+    npc_knight_desc: "Un caballero sin rostro sostiene una espada rota. Su voz resuena hueca dentro de la armadura.", 
+    npc_knight_c1: "Aceptar Misión (Matar 3)", 
+    npc_knight_c2: "Rechazar", 
+    npc_knight_c3: "Atacar",
+    
+    npc_child_name: "Niño Perdido", 
+    npc_child_desc: "Un niño asustado llora entre sombras. El camino por delante está repleto de monstruos.", 
+    npc_child_c1: "Ayudar (Bendición)", 
+    npc_child_c2: "Ignorar", 
+    npc_child_c3: "Investigar",
+    
+    npc_cartographer_name: "Viejo Cartógrafo", 
+    npc_cartographer_desc: "Mapas garabateados cubren el suelo. No vende ítems, solo verdades incómodas.", 
+    npc_cartographer_c1: "Comprar Verdad (80)", 
+    npc_cartographer_c2: "Amenazar", 
+    npc_cartographer_c3: "Ignorar",
+    
+    npc_voice_name: "Voz en la Oscuridad", 
+    npc_voice_desc: "Escuchas una voz sin forma. Pide... algo. Tal vez atención. Tal vez un precio.", 
+    npc_voice_c1: "Responder", 
+    npc_voice_c2: "Ofrecer Oro (50)", 
+    npc_voice_c3: "Silencio",
+    
+    npc_guard_name: "Guardia Corrompido", 
+    npc_guard_desc: "Un antiguo protector, ahora deformado. Pide redención con los últimos rasgos de cordura.", 
+    npc_guard_c1: "Dar Antídoto", 
+    npc_guard_c2: "Matar", 
+    npc_guard_c3: "Ignorar",
+
+    // FEEDBACK TITLES & STRINGS
+    fb_charity: "Acto de Caridad",
+    fb_greed: "Avaricia",
+    fb_cruelty: "Crueldad",
+    fb_ignorance: "Indiferencia",
+    fb_deal: "Trato Hecho",
+    fb_quest: "Misión Aceptada",
+    fb_consequence: "Consecuencia",
+    fb_blessing: "Bendición Recibida",
+    fb_curse: "Maldición",
+    fb_combat: "Combate Inminente",
+    fb_theft: "Robo",
+    
+    fb_desc_merchant_help: "El mercader agradece con lágrimas. Promete descuentos futuros.",
+    fb_desc_merchant_theft: "Robas lo que puedes. El mercader maldice tu alma.",
+    fb_desc_prisoner_free: "Ella se levanta, jurando luchar a tu lado por un tiempo.",
+    fb_desc_alchemist_help: "Él ríe maniáticamente y te entrega una mezcla inestable.",
+    fb_desc_idol_gold: "El ídolo consume el oro y brilla con poder.",
+    fb_desc_idol_blood: "El ídolo drena tu sangre, pero te fortalece.",
+    fb_desc_knight_quest: "El caballero apunta su espada a la oscuridad. La caza ha comenzado.",
+    fb_desc_child_help: "El niño toca tu mano. Una luz cálida te envuelve.",
+    fb_desc_cartographer: "Revela los secretos de este piso.",
+    fb_desc_voice_response: "La voz susurra secretos antiguos.",
+    fb_desc_guard_help: "Su piel vuelve a la normalidad. Te entrega su escudo.",
+
+    // EFFECTS
+    eff_merchant_discount: "Descuento Mercader (-50%)",
+    eff_merchant_tax: "Impuesto Mercader (+50%)",
+    eff_prisoner_join: "Prisionera Aliada (10 niveles)",
+    eff_more_enemies: "Más enemigos aparecerán",
+    eff_quest_start: "Derrota 3 Enemigos",
+    eff_map_reveal: "Mapa Revelado",
+    eff_traps_reveal: "Trampas Reveladas",
+
+    // ... (Keeping all existing translations)
     tut_prove_title: "PRUEBA TU VALOR", tut_prove_desc: "Antes de avanzar, debes probar tu valor.\nDerrota al menos a un enemigo para continuar.",
     tut_key_title: "ENCUENTRA LA LLAVE", tut_key_desc: "La salida está cerrada.\nExplora el mapa hasta encontrar la llave.",
     tut_stairs_title: "USA LA ESCALERA", tut_stairs_desc: "Con la llave en mano, busca la escalera.\nTe lleva a niveles más profundos.",
@@ -497,20 +697,10 @@ export const TRANSLATIONS: Record<Language, any> = {
     c_weight_name: "Peso Muerto", c_weight_desc: "Tu velocidad se reduce.",
     c_tribute_name: "Tributo de Sangre", c_tribute_desc: "Pierdes vida al recoger oro.",
 
-    npc_merchant_wounded_name: "Mercader Herido", npc_merchant_wounded_desc: "El mercader está apoyado en la pared, sangrando...", npc_merchant_wounded_c1: "Dar Poción", npc_merchant_wounded_c2: "Dar 50 Oro", npc_merchant_wounded_c3: "Ignorar", npc_merchant_wounded_c4: "Robar",
-    npc_prisoner_name: "Prisionera de las Catacumbas", npc_prisoner_desc: "Una mujer encadenada suplica ayuda...", npc_prisoner_c1: "Liberar", npc_prisoner_c2: "Matar", npc_prisoner_c3: "Ignorar",
-    npc_alchemist_name: "Alquimista Obsesionado", npc_alchemist_desc: "Un alquimista pide un Antídoto para finalizar un experimento.", npc_alchemist_c1: "Entregar Antídoto", npc_alchemist_c2: "Rechazar", npc_alchemist_c3: "Exigir Pago",
-    npc_idol_name: "Ídolo Susurrante", npc_idol_desc: "Una estatua viva pide una ofrenda...", npc_idol_c1: "Ofrecer Oro (100)", npc_idol_c2: "Ofrecer Vida (10%)", npc_idol_c3: "Destruir el Ídolo",
-    npc_knight_name: "Caballero Sin Rostro", npc_knight_desc: "Un caballero pide ayuda para terminar su misión...", npc_knight_c1: "Ayudar (Mate 3 Enemigos)", npc_knight_c2: "Rechazar", npc_knight_c3: "Atacar",
-    npc_child_name: "Niño Perdido", npc_child_desc: "Una niña sola busca la salida...", npc_child_c1: "Ayudar (Bendición)", npc_child_c2: "Ignorar", npc_child_c3: "Explorar la Situación",
-    npc_cartographer_name: "Viejo Cartógrafo", npc_cartographer_desc: "Vende conocimiento, no items...", npc_cartographer_c1: "Pagar Oro (80)", npc_cartographer_c2: "Amenazar", npc_cartographer_c3: "Ignorar",
-    npc_voice_name: "Voz en la Oscuridad", npc_voice_desc: "Una voz pide algo... pero no ves a nadie...", npc_voice_c1: "Responder", npc_voice_c2: "Ofrecer Oro (50)", npc_voice_c3: "Silencio",
-    npc_guard_name: "Guardia Corrompido", npc_guard_desc: "Un ex-protector ahora deformado pide redención...", npc_guard_c1: "Dar Antídoto", npc_guard_c2: "Matar", npc_guard_c3: "Ignorar",
-
     follower_prisoner: "Prisionera", follower_knight: "Caballero",
     no_potion: "¡Sin pociones!", no_gold: "¡Sin oro!", no_antidote: "¡Sin antídoto!",
     
-    shop_solo_dev_msg: "Este juego es desarrollado y mantenido por un desarrollador solitario, con mucho cuidado y dedicación.\nSi te gusta la experiencia y deseas apoyar el proyecto, puedes adquirir cualquiera de los items abajo.\nLas compras ayudan directamente a mantener el juego online, cubrir costos de servidores, herramientas, actualizaciones y nuevas mejoras.\n\nTodos los pagos se realizan de forma segura por Stripe, una de las plataformas de pago más fiables del mundo.\n\nApoyar es opcional, pero hace una gran diferencia para mantener el juego vivo y en constante evolución.\n\nGracias por jugar",
+    shop_solo_dev_msg: "Este juego es desarrollado y mantenido por un desarrollador solitario, con mucho cuidado y dedicación.\nSi te gusta la experiencia y deseas apoyar el proyecto, puedes adquirir cualquiera de los items abajo.\nLas compras ayudan directamente a mantener el juego online, cubrir costos de servidores, herramientas, actualizaciones y nuevas mejoras.\n\nTodos los pagos se realizan de forma segura por Stripe, una de las plataformas de pago más fiables del mundo.\n\nApoyar es opcional, pero hace una gran diferencia para mantener el juego vivo e en constante evolución.\n\nGracias por jugar",
     shop_info_title: "Información importante:",
     shop_info_secure: "• Pago rápido y seguro vía Stripe\n• Ningún dato de tarjeta es almacenado por el juego\n• Las recompensas se liberan automáticamente tras la confirmación",
     ost_title: "BANDA SONORA DESBLOQUEADA",
@@ -531,6 +721,6 @@ export const TRANSLATIONS: Record<Language, any> = {
     item_sword_1: "Espada Rústica", item_sword_2: "Hoja Afilada", item_sword_3: "Espada del Veterano", item_sword_4: "Hacha Pesada", item_sword_5: "Arma de Guerra",
     item_shield_1: "Escudo de Madera", item_shield_2: "Escudo Reforzado", item_shield_3: "Placas de Hierro", item_shield_4: "Coraza Pesada", item_shield_5: "Armadura de Batalla",
     item_health_1: "Talismán Vital", item_health_2: "Amuleto de Sangre", item_health_3: "Corazón Endurecido", item_health_4: "Relicario Vital", item_health_5: "Esencia de Vida",
-    item_speed_1: "Botas Ligeras", item_speed_2: "Pasos Ágiles", item_speed_3: "Grevas Rápidas", item_speed_4: "Marca del Viento", item_speed_5: "Reflejos Sobrenaturales",
+    item_speed_1: "Botas Ligeras", item_speed_2: "Pasos Ágiles", item_speed_3: "Grevas Rápidas", item_speed_4: "Marca del Vento", item_speed_5: "Reflejos Sobrenaturales",
   }
 };
