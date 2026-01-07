@@ -1,0 +1,218 @@
+
+import React from 'react';
+import { TileType, Position, Enemy, Chest, PotionEntity, ItemEntity, LevelTheme, Pet, PoisonStatus, Trap, NPC, Follower } from '../types';
+import { TILE_COLORS, MAP_WIDTH, MAP_HEIGHT, THEME_CONFIG, NPC_COLORS } from '../constants';
+import { Icon } from './Icons';
+
+interface GameMapProps {
+  map: TileType[][];
+  theme: LevelTheme;
+  playerPos: Position;
+  enemies: Enemy[];
+  chests: Chest[];
+  potions: PotionEntity[];
+  items: ItemEntity[];
+  npcs?: NPC[];
+  traps?: Trap[];
+  keyPos?: Position;
+  merchantPos?: Position;
+  altarPos?: Position;
+  eggPos?: Position;
+  hasKey: boolean;
+  stairsPos: Position;
+  tronModeActive?: boolean;
+  tronTrail?: Position[];
+  activePet?: Pet;
+  isCrowUnlocked?: boolean;
+  crowPos?: Position;
+  activeFollower?: Follower;
+  ritualDarkness?: boolean;
+  keyPath?: Position[];
+  compassPath?: Position[];
+  mapPath?: Position[];
+  poisonStatus?: PoisonStatus;
+  onTileClick: (x: number, y: number) => void;
+}
+
+const VIEW_W = 11;
+const VIEW_H = 13;
+
+const GameMap: React.FC<GameMapProps> = ({ 
+  map, theme, playerPos, enemies, chests, potions, items, npcs = [], traps = [],
+  keyPos, merchantPos, altarPos, eggPos, hasKey, stairsPos, 
+  tronModeActive, tronTrail = [], activePet, isCrowUnlocked, crowPos, activeFollower,
+  ritualDarkness, keyPath = [], compassPath = [], mapPath = [], poisonStatus, onTileClick 
+}) => {
+  const config = THEME_CONFIG[theme] || THEME_CONFIG.VOID;
+
+  if (!map || map.length === 0) return null;
+
+  let startX = Math.max(0, playerPos.x - Math.floor(VIEW_W / 2));
+  let startY = Math.max(0, playerPos.y - Math.floor(VIEW_H / 2));
+
+  if (startX + VIEW_W > MAP_WIDTH) startX = MAP_WIDTH - VIEW_W;
+  if (startY + VIEW_H > MAP_HEIGHT) startY = MAP_HEIGHT - VIEW_H;
+
+  const renderTile = (y: number, x: number) => {
+    if (!map[y] || map[y][x] === undefined) return null;
+
+    const isPlayer = x === playerPos.x && y === playerPos.y;
+    
+    // Pet normal (Lobo, Puma, etc)
+    const isPet = activePet && x === activePet.pos.x && y === activePet.pos.y && !isPlayer;
+    
+    // Seguidor (Follower)
+    const isFollower = activeFollower && x === activeFollower.pos.x && y === activeFollower.pos.y && !isPlayer && !isPet;
+
+    // Corvo (independente)
+    const isCrow = isCrowUnlocked && crowPos && x === crowPos.x && y === crowPos.y;
+    // Verifica se está "longe" do jogador (caçando armadilha)
+    const isCrowSeparated = isCrow && (crowPos.x !== playerPos.x || crowPos.y !== playerPos.y);
+
+    const enemy = enemies.find(e => e.x === x && e.y === y);
+    const chest = chests.find(c => c.x === x && c.y === y);
+    const potion = potions.find(p => p.x === x && p.y === y);
+    const npc = npcs.find(n => n.x === x && n.y === y);
+    const isKey = keyPos && x === keyPos.x && y === keyPos.y && !hasKey;
+    const isMerchant = merchantPos && x === merchantPos.x && y === merchantPos.y;
+    const isAltar = altarPos && x === altarPos.x && y === altarPos.y;
+    const isEgg = eggPos && x === eggPos.x && y === eggPos.y;
+    const isStairs = x === stairsPos.x && y === stairsPos.y;
+    const isTrail = tronModeActive && tronTrail.some(tp => tp.x === x && tp.y === y);
+    const isKeyPath = !hasKey && keyPath.some(kp => kp.x === x && kp.y === y);
+    const isCompassPath = compassPath.some(cp => cp.x === x && cp.y === y);
+    const isMapPath = mapPath.some(mp => mp.x === x && mp.y === y);
+    
+    const trap = traps.find(t => t.x === x && t.y === y);
+    const isTrapVisible = trap && (trap.revealed || trap.triggered);
+
+    let fogOpacity = "opacity-100";
+    if (ritualDarkness && !isPlayer) {
+        const dist = Math.max(Math.abs(x - playerPos.x), Math.abs(y - playerPos.y));
+        if (dist > 2) fogOpacity = "opacity-0 pointer-events-none";
+        else if (dist > 1) fogOpacity = "opacity-20";
+    }
+
+    let playerColorClass = TILE_COLORS.PLAYER;
+    if (tronModeActive) playerColorClass = 'text-cyan-400 animate-tron-pulse scale-150';
+    else if (poisonStatus) playerColorClass = 'text-green-500 animate-pulse';
+
+    const getPetIcon = (type: Pet['type']) => {
+        switch(type) {
+            case 'LOBO': return <Icon.Wolf />;
+            case 'PUMA': return <Icon.Puma />;
+            case 'CACHORRO': return <Icon.Dog />;
+            case 'URSO': return <Icon.Panda />;
+            case 'CORVO': return <Icon.Corvo />;
+            default: return <Icon.Wolf />;
+        }
+    };
+
+    return (
+      <div 
+        key={`${x}-${y}`} 
+        onClick={() => onTileClick(x, y)}
+        className={`w-8 h-8 md:w-12 md:h-12 flex-shrink-0 flex items-center justify-center relative border-[0.5px] border-zinc-900/10 cursor-pointer active:bg-zinc-700/30 transition-all duration-300 ${fogOpacity} ${map[y][x] === 'WALL' ? 'bg-zinc-900/20' : 'bg-transparent'}`}
+      >
+        {isPlayer ? (
+          <span className={`${playerColorClass} drop-shadow-[0_0_15px_rgba(250,204,21,1)] animate-player-bounce z-20`}>
+            {tronModeActive ? <Icon.Horse /> : <Icon.Player />}
+          </span>
+        ) : null}
+
+        {isPet && !isPlayer && (
+          <span className={`absolute ${isCrow && !isCrowSeparated ? 'bottom-0 left-0 scale-75' : 'inset-0 flex items-center justify-center scale-90'} ${TILE_COLORS.PET} animate-pet-wiggle z-15`}>
+            {getPetIcon(activePet!.type)}
+          </span>
+        )}
+
+        {isFollower && !isPlayer && (
+           <span className={`absolute inset-0 flex items-center justify-center scale-90 ${activeFollower.type === 'PRISONER' ? 'text-orange-700' : 'text-blue-700'} animate-pet-wiggle z-15`}>
+              <Icon.Player />
+           </span>
+        )}
+
+        {isCrow && (
+           <span className={`absolute z-20 transition-all duration-500
+             ${isCrowSeparated 
+                ? 'inset-0 flex items-center justify-center text-indigo-200 drop-shadow-[0_0_10px_rgba(129,140,248,0.9)] scale-90' 
+                : ((isPet || isFollower) ? '-top-2 -right-2 scale-75' : 'inset-0 flex items-center justify-center scale-90 -translate-y-2') + ' text-zinc-400 drop-shadow-[0_0_5px_rgba(255,255,255,0.3)] animate-pet-wiggle'}
+           `}>
+             <Icon.Corvo />
+             {isCrowSeparated && (
+                <>
+                  <span className="absolute inset-0 bg-indigo-400/20 rounded-full animate-ping"></span>
+                  <span className="absolute -top-1 -right-1 w-1.5 h-1.5 bg-indigo-400 rounded-full animate-pulse shadow-[0_0_5px_#818cf8]"></span>
+                </>
+             )}
+           </span>
+        )}
+
+        {npc ? (
+            <span className={`${NPC_COLORS[npc.type] || 'text-zinc-400'} drop-shadow-[0_0_8px_currentColor] z-15 animate-pulse`}>
+                <Icon.Player />
+            </span>
+        ) : enemy ? (
+          <span className={`${TILE_COLORS.ENEMY} drop-shadow-[0_0_8px_rgba(239,68,68,0.6)] z-10`}>
+            {enemy.isBoss ? <Icon.Ghost /> : <Icon.Enemy />}
+          </span>
+        ) : isKey ? (
+          <span className={`${TILE_COLORS.KEY} animate-bounce drop-shadow-[0_0_12px_rgba(234,179,8,1)] z-10`}><Icon.Key /></span>
+        ) : isMerchant ? (
+          <span className={`${TILE_COLORS.MERCHANT} drop-shadow-[0_0_10px_rgba(129,140,248,0.6)] animate-pulse z-10`}><Icon.Merchant /></span>
+        ) : isAltar ? (
+          <span className={`${TILE_COLORS.ALTAR} drop-shadow-[0_0_12px_rgba(168,85,247,0.7)] animate-pulse z-10`}><Icon.Altar /></span>
+        ) : potion ? (
+          <span className={`${TILE_COLORS.POTION} animate-potion-sparkle z-10`}><Icon.Potion /></span>
+        ) : chest ? (
+          <span className={`${TILE_COLORS.CHEST} drop-shadow-[0_0_8px_rgba(96,165,250,0.5)] z-10`}><Icon.Chest /></span>
+        ) : isEgg ? (
+          <span className={`${TILE_COLORS.EGG} animate-pulse drop-shadow-[0_0_10px_rgba(255,255,255,0.8)] z-10`}><Icon.Egg /></span>
+        ) : isStairs ? (
+          <span className={`${TILE_COLORS.STAIRS} animate-pulse scale-110 z-10`}><Icon.Stairs /></span>
+        ) : isTrapVisible ? (
+          <span className={`${TILE_COLORS.TRAP} animate-pulse z-0`}><Icon.Trap /></span>
+        ) : isKeyPath ? (
+           <div className="w-1.5 h-1.5 bg-yellow-400 rounded-full animate-pulse shadow-[0_0_10px_yellow] z-0" />
+        ) : isCompassPath ? (
+           <div className="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse shadow-[0_0_10px_red] z-0 opacity-60" />
+        ) : isMapPath ? (
+           <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse shadow-[0_0_10px_green] z-0 opacity-60" />
+        ) : isTrail ? (
+          <div className="w-full h-full bg-cyan-400/20 animate-pulse flex items-center justify-center">
+            <div className="w-full h-full border border-cyan-400/30 shadow-[0_0_10px_#22d3ee]" />
+          </div>
+        ) : map[y][x] === 'WALL' ? (
+          theme === 'FOREST' ? (
+              <span className={`${config.wall} font-bold opacity-80 text-lg`}><Icon.Trees width={20} height={20} /></span>
+          ) : (
+              <span className={`${config.wall} font-bold opacity-60 text-lg`}>{config.wallChar}</span>
+          )
+        ) : (
+          <span className={`${config.floor} opacity-20 font-mono`}>{config.char}</span>
+        )}
+      </div>
+    );
+  };
+
+  const rows = [];
+  for (let y = startY; y < startY + VIEW_H; y++) {
+    const tiles = [];
+    for (let x = startX; x < startX + VIEW_W; x++) {
+      const tile = renderTile(y, x);
+      if (tile) tiles.push(tile);
+    }
+    rows.push(<div key={y} className="flex">{tiles}</div>);
+  }
+
+  return (
+    <div className="bg-black/40 p-2 rounded-2xl border-4 border-zinc-800 shadow-[0_0_40px_rgba(0,0,0,0.8)] overflow-hidden relative mx-auto touch-none">
+      {tronModeActive && <div className="absolute inset-0 border-2 border-cyan-500/50 animate-pulse pointer-events-none z-30" />}
+      <div className="bg-black inline-block rounded-lg overflow-hidden shadow-inner">
+        {rows}
+      </div>
+    </div>
+  );
+};
+
+export default GameMap;
